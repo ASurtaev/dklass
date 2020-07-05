@@ -1,5 +1,5 @@
 import PySimpleGUI as sg
-from time import sleep
+import os as os
 
 def save_mechanic(class_respect, teachers, grades, situation, year, slot):
 	with open(slot, 'w') as file:
