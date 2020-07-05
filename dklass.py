@@ -131,23 +131,11 @@ def replyWindow(reply):
 			
 	reply_window.close()	
 
-#later
-def loadSaveMenu():
-	sg.theme('Purple')
-
-	layout = [	[sg.Button('In development', size = (40, 7))],
-				[sg.Button('Back', size = (40, 7))] ]
-
-	start_window = sg.Window('Load menu', layout, size = (600, 355))
-
-	while True:
-		event, values = start_window.read()
-		if event == sg.WIN_CLOSED or event =='Back':
-			break
-		if event == 'In development':
-			pass
-			
-	start_window.close()
+#info = (class_respect, teachers, grades, year, situation) or False
+def loadSave(info):
+	if info == False:
+		return
+	print(info)
 
 def startMenu():
 	sg.theme('Purple')
@@ -163,7 +151,7 @@ def startMenu():
 		if event == sg.WIN_CLOSED or event =='Back':
 			break
 		if event == 'Load save':
-			loadSaveMenu()
+			loadSave(svld.load())
 		if event == 'Start new game':
 			gameplay()
 			break
