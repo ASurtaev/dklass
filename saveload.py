@@ -16,7 +16,13 @@ def save_mechanic(class_respect, teachers, grades, situation, year, slot):
 		if event == sg.WIN_CLOSED or event == 'ok':
 	window.close()
 
-def save(class_respect, teachers, grades, situation, year):
+def save(class_respect, teachers, grades, year, situation):
+	#leave only number of situation
+	if situation[1] != ')':
+		situation = situation[0] + situation[1]
+	else:
+		situation = situation[0]
+		 
 	sg.theme('Purple')
 	save_layout = []
 

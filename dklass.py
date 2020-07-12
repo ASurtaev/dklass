@@ -3,12 +3,26 @@ import saveload as svld
 
 def gameplay():
 	sg.theme('Purple')
-	n_of_situations = 3
-	class_respect = 0
-	teachers = 0
-	grades = 0
 
-	fin = open('script/8grade.dat', 'r')
+	fin = open('script/' + str(year) + 'grade.dat', 'r')
+	n_of_situations = int(fin.readline())
+
+	n_of_situations = n_of_situations - int(loaded_situation) + 1
+	for _ in range(int(loaded_situation) - 1):
+		fin.readline() #situation
+		fin.readline() #option1
+		fin.readline() #consequences
+		fin.readline() # reply1
+		fin.readline() #option2
+		fin.readline() #consequences
+		fin.readline() # reply2
+		fin.readline() #option3
+		fin.readline() #consequences
+		fin.readline() # reply3
+		fin.readline() #option4
+		fin.readline() #consequences
+		fin.readline() # reply4
+		fin.readline() #void
 
 	for _ in range(n_of_situations):
 		situation = fin.readline()
@@ -52,7 +66,7 @@ def gameplay():
 				fin.close()
 				return
 			if event == 'Save':
-				svld.save(class_respect, teachers, grades, situation, '8grade')
+				svld.save(class_respect, teachers, grades, year, situation)
 			if event == option1:
 				class_respect += numeric_cons1[0]
 				teachers += numeric_cons1[1]
@@ -83,7 +97,10 @@ def gameplay():
 				break
 
 	fin.close()
-	finishWindow(class_respect, teachers, grades)
+	info = finishWindow(class_respect, teachers, grades, year)
+	if info != None:
+		return info
+		
 	gameplay_window.close()
 
 def finishWindow(class_respect, teachers, grades):
@@ -98,21 +115,37 @@ def finishWindow(class_respect, teachers, grades):
 	else:
 		result_name = 'та хуй знает кто пока что'
 
+	if year == 11:
+		finish_layout = [	[sg.Text('Игра закончена!!')],
+							[sg.Text('Ваш результат:')],
+							[sg.Text('Респект однокл - ' + str(class_respect))],
+							[sg.Text('Отношения с учителями - ' + str(teachers))],
+							[sg.Text('Успеваемость - ' + str(grades))],
+							[sg.Text('Ты' + result_name)],
+							[sg.Button('Back')] ]
+	else:
+		finish_layout = [	[sg.Text('Год ' + str(year) + ' завершён!!')],
+							[sg.Text('Ваш результат:')],
+							[sg.Text('Респект однокл - ' + str(class_respect))],
+							[sg.Text('Отношения с учителями - ' + str(teachers))],
+							[sg.Text('Успеваемость - ' + str(grades))],
+							[sg.Text('Покачто ты' + result_name)],
+							[sg.Button('Save')],
+							[sg.Button('Continue')],
+							[sg.Button('Back')] ]		
 
-	layout = [	[sg.Text('Игра закончена!!')],
-				[sg.Text('Ваш результат:')],
-				[sg.Text('Респект однокл - ' + str(class_respect))],
-				[sg.Text('Отношения с учителями - ' + str(teachers))],
-				[sg.Text('Успеваемость - ' + str(grades))],
-				[sg.Text('Ты ' + result_name)],
-				[sg.Button('Back')] ]
 
-	reply_window = sg.Window('Finish window', layout, size = (600, 400))
+	finish_window = sg.Window('Finish window', finish_layout, size = (600, 400))
 
 	while True:
-		event, values = reply_window.read()
+		event, values = finish_window.read()
 		if event == sg.WIN_CLOSED or event =='Back':
 			break
+		if event == 'Save':
+			svld.save(class_respect, teachers, grades,year + 1, situation = '1)')
+		if event == 'Continue':
+			finish_window.close()
+			return (class_respect, teachers, grades, year + 1, 1) # laast is situation
 			
 	reply_window.close()	
 
@@ -129,13 +162,7 @@ def replyWindow(reply):
 		if event == sg.WIN_CLOSED or event =='ok':
 			break
 			
-	reply_window.close()	
-
-#info = (class_respect, teachers, grades, year, situation) or False
-def loadSave(info):
-	if info == False:
-		return
-	print(info)
+	finish_window.close()	
 
 def startMenu():
 	sg.theme('Purple')
@@ -151,9 +178,18 @@ def startMenu():
 		if event == sg.WIN_CLOSED or event =='Back':
 			break
 		if event == 'Load save':
-			loadSave(svld.load())
+			#info = (class_respect, teachers, grades, year, situation) or False
+			info = svld.load()
+			if info == False:
+				break
+			info = gameplay(class_respect = info[0], teachers = info[1], grades = info[2], year = info[3], loaded_situation = info[4])
+			if info != None:
+				gameplay(class_respect = info[0], teachers = info[1], grades = info[2], year = info[3], loaded_situation = info[4])
+			break
 		if event == 'Start new game':
-			gameplay()
+			info = gameplay(class_respect = 0, teachers = 0, grades = 0, year = 8, loaded_situation = 1)
+			if info != None:
+				gameplay(class_respect = info[0], teachers = info[1], grades = info[2], year = info[3], loaded_situation = info[4])
 			break
 
 	start_window.close()
